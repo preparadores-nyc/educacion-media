@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Certificado - MINEDUC</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Animación de estrellas */
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: transparent url('https://www.transparenttextures.com/patterns/stardust.png') repeat top center;
+            animation: twinkling 10s infinite linear;
+        }
+        @keyframes twinkling {
+            from { background-position: 0 0; }
+            to { background-position: -10000px 5000px; }
+        }
+
+        /* Espaciado del Hero */
+        .hero {
+            margin-top: 2cm;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .form-section {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        .preview-section {
+            flex: 1;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 600px;
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        input:hover, select:hover, input:focus, select:focus {
+            border-color: #00bcd4;
+            box-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #00bcd4;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #008ba3;
+            box-shadow: 0 0 15px rgba(0, 188, 212, 0.7);
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars"></div>
+
+    <div class="hero">
+        <h1>Generación de Certificado de Estudios</h1>
+        <p>Complete los datos para generar el documento oficial. Sistema de procesamiento único.</p>
+    </div>
+
+    <div class="container">
+        <div class="form-section">
+            <form id="certificadoForm">
+                <label>Nombre Completo:</label>
+                <input type="text" id="nombre" value="MARCELO ESTEBAN SEPULVEDA VARGAS" required>
+                
+                <label>RUN:</label>
+                <input type="text" id="run" value="18367639-3" required>
+                
+                <label>Año Escolar:</label>
+                <input type="number" id="ano" value="2011" required>
+
+                <label>Establecimiento:</label>
+                <input type="text" id="establecimiento" value="LICEO DE APLICACION" required>
+
+                <h3>Calificaciones</h3>
+                <label>Biología:</label>
+                <input type="text" id="nota_biologia" value="5.0" required>
+                <label>Filosofía y Psicología:</label>
+                <input type="text" id="nota_filosofia" value="5.5" required>
+                <label>Física:</label>
+                <input type="text" id="nota_fisica" value="5.2" required>
+                <label>Historia y Ciencias Sociales:</label>
+                <input type="text" id="nota_historia" value="6.0" required>
+                
+                <h3>Resultados Finales</h3>
+                <label>Promedio General:</label>
+                <input type="text" id="promedio" value="5.6" required>
+                
+                <label>Situación Final:</label>
+                <select id="situacion">
+                    <option value="APROBADO" selected>APROBADO</option>
+                    <option value="REPROBADO">REPROBADO</option>
+                </select>
+
+                <button type="submit">Generar Documento y Ver Vista Previa</button>
+            </form>
+        </div>
+
+        <div class="preview-section" id="previewContainer">
+            <p style="color: #666;">La vista previa del documento aparecerá aquí...</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('certificadoForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = e.target.querySelector('button');
+            btn.textContent = 'Generando...';
+            
+            // Recopilación de datos para el Webhook de Make.com
+            const payload = {
+                nombre: document.getElementById('nombre').value,
+                run: document.getElementById('run').value,
+                ano: document.getElementById('ano').value,
+                establecimiento: document.getElementById('establecimiento').value,
+                notas: {
+                    biologia: document.getElementById('nota_biologia').value,
+                    filosofia: document.getElementById('nota_filosofia').value,
+                    fisica: document.getElementById('nota_fisica').value,
+                    historia: document.getElementById('nota_historia').value
+                },
+                promedio: document.getElementById('promedio').value,
+                situacion: document.getElementById('situacion').value
+            };
+
+            try {
+                // REEMPLAZAR CON LA URL DE TU WEBHOOK EN MAKE.COM
+                const webhookUrl = 'TU_WEBHOOK_URL_AQUI'; 
+                
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                
+                // Mostrar la vista previa en el iframe
+                if(data.preview_url) {
+                    document.getElementById('previewContainer').innerHTML = `<iframe src="${data.preview_url}"></iframe>`;
+                }
+
+            } catch (error) {
+                alert('Error al conectar con la automatización.');
+                console.error(error);
+            } finally {
+                btn.textContent = 'Generar Documento y Ver Vista Previa';
+            }
+        });
+    </script>
+</body>
+</html>
