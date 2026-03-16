@@ -106,6 +106,10 @@ input::placeholder { color: rgba(255,255,255,0.3); transition: opacity 0.3s; }
 select option { background-color: #111827; color: #fff; }
 input:focus, select:focus { outline: none; border-color: var(--primary-glow); background-color: rgba(255, 255, 255, 0.15); box-shadow: 0 0 15px rgba(0, 136, 255, 0.3); transform: translateY(-2px); }
 
+/* Campo readonly (Región automática) */
+input[readonly] { background-color: rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.05); color: #aaa; cursor: not-allowed; }
+input[readonly]:focus { box-shadow: none; border-color: rgba(255,255,255,0.05); transform: none; }
+
 /* Notas de campo */
 .field-note {
     font-size: 0.75rem;
@@ -137,9 +141,9 @@ button:disabled { background: #333; color: #aaa; cursor: not-allowed; transform:
 /* CAPA ANTI CLIC - SEGURIDAD MÁXIMA */
 .anti-download-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; background: transparent; cursor: default; }
 
-/* MARCA DE AGUA IMPOSIBLE DE IGNORAR (ANTI-SCREENSHOT) */
+/* MARCA DE AGUA IMPOSIBLE DE IGNORAR (ANTI-SCREENSHOT) - Z-INDEX ALTO */
 .watermark-overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 22; pointer-events: none;
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='250' height='250'><text x='50%' y='50%' font-size='26' fill='rgba(255,255,255,0.12)' font-family='Arial' font-weight='900' text-anchor='middle' dominant-baseline='middle' transform='rotate(-45 125 125)'>VISTA PREVIA</text></svg>");
     background-repeat: repeat;
 }
@@ -230,25 +234,7 @@ button:disabled { background: #333; color: #aaa; cursor: not-allowed; transform:
 
 <div>
     <label>Región</label>
-    <select id="region" required>
-        <option value="" disabled selected>Seleccione una región</option>
-        <option value="REGIÓN DE ARICA Y PARINACOTA">Región de Arica y Parinacota</option>
-        <option value="REGIÓN DE TARAPACÁ">Región de Tarapacá</option>
-        <option value="REGIÓN DE ANTOFAGASTA">Región de Antofagasta</option>
-        <option value="REGIÓN DE ATACAMA">Región de Atacama</option>
-        <option value="REGIÓN DE COQUIMBO">Región de Coquimbo</option>
-        <option value="REGIÓN DE VALPARAÍSO">Región de Valparaíso</option>
-        <option value="REGIÓN METROPOLITANA DE SANTIAGO">Región Metropolitana de Santiago</option>
-        <option value="REGIÓN DEL LIBERTADOR GRAL. BERNARDO O'HIGGINS">Región del Libertador Gral. Bernardo O'Higgins</option>
-        <option value="REGIÓN DEL MAULE">Región del Maule</option>
-        <option value="REGIÓN DE ÑUBLE">Región de Ñuble</option>
-        <option value="REGIÓN DEL BIOBÍO">Región del Biobío</option>
-        <option value="REGIÓN DE LA ARAUCANÍA">Región de la Araucanía</option>
-        <option value="REGIÓN DE LOS RÍOS">Región de Los Ríos</option>
-        <option value="REGIÓN DE LOS LAGOS">Región de Los Lagos</option>
-        <option value="REGIÓN DE AYSÉN DEL GRAL. CARLOS IBÁÑEZ DEL CAMPO">Región de Aysén del Gral. Carlos Ibáñez del Campo</option>
-        <option value="REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA">Región de Magallanes y de la Antártica Chilena</option>
-    </select>
+    <input type="text" id="region" required readonly placeholder="Se autocompleta con la comuna">
 </div>
 
 <button type="submit" id="btnSubmit">Procesar emisión</button>
@@ -284,20 +270,53 @@ document.getElementById('rut').addEventListener('input', function(e) {
     e.target.value = cuerpo + '-' + dv;
 });
 
-// Validación para que obligatoriamente elijan una comuna de la lista
-document.getElementById('comuna').addEventListener('blur', function(e) {
-    const val = e.target.value;
-    const opciones = document.getElementById('lista-comunas').options;
-    let valido = false;
-    for (let i = 0; i < opciones.length; i++) {
-        if (opciones[i].value === val) {
-            valido = true;
-            break;
-        }
+// ─── LÓGICA DE AUTOCOMPLETADO DE REGIÓN ───────────────────────────────────────
+const regionesChile = {
+    "REGIÓN DE ARICA Y PARINACOTA": ["ARICA", "CAMARONES", "PUTRE", "GENERAL LAGOS"],
+    "REGIÓN DE TARAPACÁ": ["IQUIQUE", "ALTO HOSPICIO", "POZO ALMONTE", "CAMIÑA", "COLCHANE", "HUARA", "PICA"],
+    "REGIÓN DE ANTOFAGASTA": ["ANTOFAGASTA", "MEJILLONES", "SIERRA GORDA", "TALTAL", "CALAMA", "OLLAGÜE", "SAN PEDRO DE ATACAMA", "TOCOPILLA", "MARÍA ELENA"],
+    "REGIÓN DE ATACAMA": ["COPIAPÓ", "CALDERA", "TIERRA AMARILLA", "CHAÑARAL", "DIEGO DE ALMAGRO", "VALLENAR", "ALTO DEL CARMEN", "FREIRINA", "HUASCO"],
+    "REGIÓN DE COQUIMBO": ["LA SERENA", "COQUIMBO", "ANDACOLLO", "LA HIGUERA", "PAIHUANO", "VICUÑA", "ILLAPEL", "CANELA", "LOS VILOS", "SALAMANCA", "OVALLE", "COMBARBALÁ", "MONTE PATRIA", "PUNITAQUI", "RÍO HURTADO"],
+    "REGIÓN DE VALPARAÍSO": ["VALPARAÍSO", "CASABLANCA", "CONCÓN", "JUAN FERNÁNDEZ", "PUCHUNCAVÍ", "QUINTERO", "VIÑA DEL MAR", "ISLA DE PASCUA", "LOS ANDES", "CALLE LARGA", "RINCONADA", "SAN ESTEBAN", "LA LIGUA", "CABILDO", "PAPUDO", "PETORCA", "ZAPALLAR", "QUILLOTA", "LA CALERA", "HIJUELAS", "LA CRUZ", "NOGALES", "SAN ANTONIO", "ALGARROBO", "CARTAGENA", "EL QUISCO", "EL TABO", "SANTO DOMINGO", "SAN FELIPE", "CATEMU", "LLAILLAY", "PANQUEHUE", "PUTAENDO", "SANTA MARÍA", "QUILPUÉ", "LIMACHE", "OLMUÉ", "VILLA ALEMANA"],
+    "REGIÓN METROPOLITANA DE SANTIAGO": ["CERRILLOS", "CERRO NAVIA", "CONCHALÍ", "EL BOSQUE", "ESTACIÓN CENTRAL", "HUECHURABA", "INDEPENDENCIA", "LA CISTERNA", "LA FLORIDA", "LA GRANJA", "LA PINTANA", "LA REINA", "LAS CONDES", "LO BARNECHEA", "LO ESPEJO", "LO PRADO", "MACUL", "MAIPÚ", "ÑUÑOA", "PEDRO AGUIRRE CERDA", "PEÑALOLÉN", "PROVIDENCIA", "PUDAHUEL", "QUILICURA", "QUINTA NORMAL", "RECOLETA", "RENCA", "SAN JOAQUÍN", "SAN MIGUEL", "SAN RAMÓN", "SANTIAGO", "VITACURA", "PUENTE ALTO", "PIRQUE", "SAN JOSÉ DE MAIPO", "COLINA", "LAMPA", "TILTIL", "SAN BERNARDO", "BUIN", "CALERA DE TANGO", "PAINE", "MELIPILLA", "ALHUÉ", "CURACAVÍ", "MARÍA PINTO", "SAN PEDRO", "TALAGANTE", "EL MONTE", "ISLA DE MAIPO", "PADRE HURTADO", "PEÑAFLOR"],
+    "REGIÓN DEL LIBERTADOR GRAL. BERNARDO O'HIGGINS": ["RANCAGUA", "CODEGUA", "COINCO", "COLTAUCO", "DOÑIHUE", "GRANEROS", "LAS CABRAS", "MACHALÍ", "MALLOA", "MOSTAZAL", "OLIVAR", "PEUMO", "PICHIDEGUA", "QUINTA DE TILCOCO", "RENGO", "REQUÍNOA", "SAN VICENTE", "PICHILEMU", "LA ESTRELLA", "LITUECHE", "MARCHIHUE", "NAVIDAD", "PAREDONES", "SAN FERNANDO", "CHÉPICA", "CHIMBARONGO", "LOLOL", "NANCAGUA", "PALMILLA", "PERALILLO", "PLACILLA", "PUMANQUE", "SANTA CRUZ"],
+    "REGIÓN DEL MAULE": ["TALCA", "CONSTITUCIÓN", "CUREPTO", "EMPEDRADO", "MAULE", "PELARCO", "PENCAHUE", "RÍO CLARO", "SAN CLEMENTE", "SAN RAFAEL", "CAUQUENES", "CHANCO", "PELLUHUE", "CURICÓ", "HUALAÑÉ", "LICANTÉN", "MOLINA", "RAUCO", "ROMERAL", "SAGRADA FAMILIA", "TENO", "VICHUQUÉN", "LINARES", "COLBÚN", "LONGAVÍ", "PARRAL", "RETIRO", "SAN JAVIER", "VILLA ALEGRE", "YERBAS BUENAS"],
+    "REGIÓN DE ÑUBLE": ["COBQUECURA", "COELEMU", "NINHUE", "PORTEZUELO", "QUIRIHUE", "RÁNQUIL", "TREHUACO", "BULNES", "CHILLÁN VIEJO", "CHILLÁN", "EL CARMEN", "PEMUCO", "PINTO", "QUILLÓN", "SAN IGNACIO", "YUNGAY", "COIHUECO", "ÑIQUÉN", "SAN CARLOS", "SAN FABIÁN", "SAN NICOLÁS"],
+    "REGIÓN DEL BIOBÍO": ["CONCEPCIÓN", "CORONEL", "CHIGUAYANTE", "FLORIDA", "HUALQUI", "LOTA", "PENCO", "SAN PEDRO DE LA PAZ", "SANTA JUANA", "TALCAHUANO", "TOMÉ", "HUALPÉN", "LEBU", "ARAUCO", "CAÑETE", "CONTULMO", "CURANILAHUE", "LOS ÁLAMOS", "TIRÚA", "LOS ÁNGELES", "ANTUCO", "CABRERO", "LAJA", "MULCHÉN", "NACIMIENTO", "NEGRETE", "QUILACO", "QUILLECO", "SAN ROSENDO", "SANTA BÁRBARA", "TUCAPEL", "YUMBEL", "ALTO BIOBÍO"],
+    "REGIÓN DE LA ARAUCANÍA": ["TEMUCO", "CARAHUE", "CUNCO", "CURARREHUE", "FREIRE", "GALVARINO", "GORBEA", "LAUTARO", "LONCOCHE", "MELIPEUCO", "NUEVA IMPERIAL", "PADRE LAS CASAS", "PERQUENCO", "PITRUFQUÉN", "PUCÓN", "SAAVEDRA", "TEODORO SCHMIDT", "TOLTÉN", "VILCÚN", "VILLARRICA", "CHOLCHOL", "ANGOL", "COLLIPULLI", "CURACAUTÍN", "ERCILLA", "LONQUIMAY", "LOS SAUCES", "LUMACO", "PURÉN", "RENAICO", "TRAIGUÉN", "VICTORIA"],
+    "REGIÓN DE LOS RÍOS": ["VALDIVIA", "CORRAL", "LANCO", "LOS LAGOS", "MÁFIL", "MARIQUINA", "PAILLACO", "PANGUIPULLI", "LA UNIÓN", "FUTRONO", "LAGO RANCO", "RÍO BUENO"],
+    "REGIÓN DE LOS LAGOS": ["PUERTO MONTT", "CALBUCO", "COCHAMÓ", "FRESIA", "FRUTILLAR", "LOS MUERMOS", "LLANQUIHUE", "PUERTO VARAS", "CASTRO", "ANCUD", "CHONCHI", "CURACO DE VÉLEZ", "DALCAHUE", "PUQUELDÓN", "QUEILÉN", "QUELLÓN", "QUEMCHI", "QUINCHAO", "OSORNO", "PUERTO OCTAY", "PURRANQUE", "PUYEHUE", "RÍO NEGRO", "SAN JUAN DE LA COSTA", "SAN PABLO", "CHAITÉN", "FUTALEUFÚ", "HUALAIHUÉ", "PALENA"],
+    "REGIÓN DE AYSÉN DEL GRAL. CARLOS IBÁÑEZ DEL CAMPO": ["COYHAIQUE", "LAGO VERDE", "AYSÉN", "CISNES", "GUAITECAS", "COCHRANE", "O'HIGGINS", "TORTEL", "CHILE CHICO", "RÍO IBÁÑEZ"],
+    "REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA": ["PUNTA ARENAS", "LAGUNA BLANCA", "RÍO VERDE", "SAN GREGORIO", "CABO DE HORNOS", "ANTÁRTICA", "PORVENIR", "PRIMAVERA", "TIMAUKEL", "NATALES", "TORRES DEL PAINE"]
+};
+
+// Crear diccionario inverso { "LA SERENA": "REGIÓN DE COQUIMBO", ... }
+const mapaComunas = {};
+for (const region in regionesChile) {
+    regionesChile[region].forEach(comuna => {
+        mapaComunas[comuna] = region;
+    });
+}
+
+// Escuchar cambios en Comuna para actualizar la Región
+document.getElementById('comuna').addEventListener('input', function(e) {
+    const val = e.target.value.toUpperCase();
+    if (mapaComunas[val]) {
+        document.getElementById('region').value = mapaComunas[val];
+    } else {
+        document.getElementById('region').value = ""; // Limpiar si borran o escriben mal
     }
-    if (val !== "" && !valido) {
-        alert("Debe seleccionar una comuna válida de la lista desplegable.");
+});
+
+// Validación extra al perder el foco (obliga a usar una comuna de la lista)
+document.getElementById('comuna').addEventListener('blur', function(e) {
+    const val = e.target.value.toUpperCase();
+    if (val !== "" && !mapaComunas[val]) {
+        alert("Por favor seleccione una comuna válida del buscador.");
         e.target.value = "";
+        document.getElementById('region').value = "";
+    } else if(mapaComunas[val]) {
+        e.target.value = val; // Asegura que quede en mayúsculas
     }
 });
 
@@ -355,13 +374,13 @@ document.getElementById("form").addEventListener("submit", async function(e) {
 
         const data = await res.json();
 
-        // 🔥 FUNCIÓN DE SEGURIDAD EXTREMA: CAPA INVISIBLE, MARCA DE AGUA Y SIN TOOLBAR 🔥
+        // 🔥 FUNCIÓN DE SEGURIDAD EXTREMA: CAPA INVISIBLE, MARCA DE AGUA (DESPUÉS DEL IFRAME) Y SIN TOOLBAR 🔥
         const applyPreview = (url) => {
             const safeUrl = url + "#toolbar=0&navpanes=0&scrollbar=0";
             return `
                 <div class="anti-download-layer"></div>
-                <div class="watermark-overlay"></div>
                 <iframe class="pdf-frame" src="${safeUrl}" frameborder="0"></iframe>
+                <div class="watermark-overlay"></div>
                 <div class="blur-overlay"></div>
             `;
         };
