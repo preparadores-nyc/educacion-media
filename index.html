@@ -141,11 +141,12 @@ button:disabled { background: #333; color: #aaa; cursor: not-allowed; transform:
 /* CAPA ANTI CLIC - SEGURIDAD MÁXIMA */
 .anti-download-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; background: transparent; cursor: default; }
 
-/* MARCA DE AGUA IMPOSIBLE DE IGNORAR (ANTI-SCREENSHOT) - Z-INDEX ALTO */
+/* MARCA DE AGUA IMPOSIBLE DE IGNORAR (ANTI-SCREENSHOT) - COLOR OSCURO Y MIX-BLEND-MODE */
 .watermark-overlay {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='250' height='250'><text x='50%' y='50%' font-size='26' fill='rgba(255,255,255,0.12)' font-family='Arial' font-weight='900' text-anchor='middle' dominant-baseline='middle' transform='rotate(-45 125 125)'>VISTA PREVIA</text></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='250' height='250'><text x='50%' y='50%' font-size='26' fill='rgba(0,0,0,0.18)' font-family='Arial' font-weight='900' text-anchor='middle' dominant-baseline='middle' transform='rotate(-45 125 125)'>VISTA PREVIA</text></svg>");
     background-repeat: repeat;
+    mix-blend-mode: multiply;
 }
 
 .pdf-frame { width: 100%; height: 100%; border: none; opacity: 0; animation: fadeUp 0.8s ease forwards 0.2s; z-index: 1; position: relative; pointer-events: none; }
