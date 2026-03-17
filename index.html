@@ -9,13 +9,13 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
 :root {
     --primary-glow: #0088ff;
     --secondary-glow: #00d2ff;
-    --glass-bg: rgba(15, 20, 30, 0.45);
+    --glass-bg: rgba(10, 10, 10, 0.6);
     --glass-border: rgba(255, 255, 255, 0.12);
     --text-main: #ffffff;
     --text-muted: rgba(255, 255, 255, 0.75);
@@ -29,17 +29,79 @@ html { scroll-behavior: smooth; }
 
 body, html {
     width: 100%; max-width: 100%; overflow-x: hidden;
-    background-color: #050505; font-family: 'Outfit', sans-serif;
+    background-color: #000000;
+    font-family: 'Outfit', sans-serif;
     color: var(--text-main); line-height: 1.6;
 }
 
 body {
-    background-image: url('https://49659256.fs1.hubspotusercontent-na1.net/hubfs/49659256/PDFS/LOGOS%20AFP/ChatGPT%20Image%2014%20mar%202026%2c%2005_53_40%20a.m..png');
-    background-size: cover; background-position: center; background-attachment: fixed;
-    min-height: 100vh; padding-bottom: 50px;
+    min-height: 100vh; padding-bottom: 0px;
+}
+
+/* 🔥 FONDO DE GALAXIA ANIMADO 🔥 */
+.galaxy-bg {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: -1;
+    background-image: url('https://49659256.fs1.hubspotusercontent-na1.net/hubfs/49659256/PDFS/LOGOS%20AFP/hero%204%20(hermoso).png');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.3; 
+    filter: grayscale(100%);
+    mix-blend-mode: screen; 
+    animation: panSpace 60s alternate infinite linear;
 }
 
 h1, h2, h3, h4, button { font-family: 'Space Grotesk', sans-serif; }
+
+/* ─── NAVEGACIÓN ─── */
+.navbar {
+    position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 5%; background: rgba(0, 0, 0, 0.8); 
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.brand-container { display: flex; align-items: center; gap: 15px; }
+.nav-logo { height: 45px; object-fit: contain; filter: drop-shadow(0 2px 10px rgba(0,136,255,0.4)); }
+
+.brand-name {
+    font-family: 'Cinzel Decorative', serif; font-size: 1.3rem; font-weight: 700;
+    color: #ffffff; letter-spacing: 2px; text-transform: uppercase;
+    text-shadow: 0 0 15px rgba(0, 136, 255, 0.5); line-height: 1;
+}
+
+.hamburger { cursor: pointer; color: white; display: flex; align-items: center; transition: transform 0.3s; }
+.hamburger:hover { transform: scale(1.1); color: var(--secondary-glow); }
+
+/* SIDEBAR (MENÚ LATERAL) */
+.sidebar {
+    position: fixed; top: 0; right: -320px; width: 300px; height: 100vh;
+    background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+    border-left: 1px solid var(--glass-border); z-index: 2000;
+    display: flex; flex-direction: column; padding: 80px 30px 40px 30px;
+    transition: right 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+}
+.sidebar.active { right: 0; }
+.sidebar a { color: var(--text-main); text-decoration: none; font-size: 1.2rem; margin-bottom: 25px; font-weight: 500; transition: all 0.3s; }
+.sidebar a:hover { color: var(--secondary-glow); padding-left: 10px; }
+.close-btn { position: absolute; top: 20px; right: 25px; font-size: 2rem; cursor: pointer; color: var(--text-muted); transition: color 0.3s; }
+.close-btn:hover { color: #fff; }
+.sidebar .nav-btn {
+    margin-top: auto; background: linear-gradient(135deg, var(--primary-glow), #0055ff); 
+    padding: 15px 20px; border-radius: 12px; font-weight: 600; text-align: center; 
+    box-shadow: 0 4px 15px rgba(0, 136, 255, 0.3); transition: all 0.3s ease;
+}
+.sidebar .nav-btn:hover { padding-left: 20px; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 136, 255, 0.5); color: #fff; }
+
+.sidebar-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.6); z-index: 1500; display: none; opacity: 0; transition: opacity 0.4s;
+}
+.sidebar-overlay.active { display: block; opacity: 1; }
 
 /* ANIMACIONES */
 @keyframes fadeUp { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
@@ -47,13 +109,14 @@ h1, h2, h3, h4, button { font-family: 'Space Grotesk', sans-serif; }
 @keyframes pulseGlow { 0% { box-shadow: 0 0 10px rgba(0, 136, 255, 0.3); } 50% { box-shadow: 0 0 25px rgba(0, 136, 255, 0.6); } 100% { box-shadow: 0 0 10px rgba(0, 136, 255, 0.3); } }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+@keyframes mobileFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes panSpace { 0% { transform: scale(1); background-position: 0% 0%; } 100% { transform: scale(1.15); background-position: 100% 100%; } }
 
-/* HERO SECTION - ESCRITORIO */
-.hero-section { position: relative; width: 100%; height: 100vh; display: flex; justify-content: center; align-items: flex-end; overflow: hidden; background-color: #000; padding-left: 0.5cm; }
-.hero-image { position: absolute; top: 0; left: 0.5cm; width: calc(100% - 0.5cm); height: 100%; object-fit: cover; object-position: center top; z-index: 1; animation: fadeUp 1s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+/* ─── HERO SECTION ─── */
+.hero-section { position: relative; width: 100%; height: 100vh; display: flex; justify-content: center; align-items: flex-end; overflow: hidden; background-color: transparent; padding: 0; }
+.hero-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; object-position: center; z-index: 2; animation: fadeUp 1s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
 .banner-web { display: block; }
 .banner-mobile { display: none; }
-
 .scroll-arrow {
     position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 10; cursor: pointer;
     background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--glass-border);
@@ -65,33 +128,20 @@ h1, h2, h3, h4, button { font-family: 'Space Grotesk', sans-serif; }
 .scroll-arrow:hover svg { transform: translateY(3px); }
 
 /* LAYOUT */
-.container { max-width: 1440px; width: 100%; margin: 40px auto 20px auto; display: flex; flex-direction: row; gap: clamp(20px, 3vw, 40px); padding: 0; align-items: flex-start; }
+.container { max-width: 1440px; width: 100%; margin: 60px auto 40px auto; display: flex; flex-direction: row; gap: clamp(20px, 3vw, 40px); padding: 0 20px; align-items: flex-start; z-index: 5; position: relative; }
 .form-panel { flex: 1.2; min-width: 0; }
-.preview-panel { flex: 1; min-width: 0; position: sticky; top: 30px; display: flex; flex-direction: column; gap: 25px; }
+.preview-panel { flex: 1; min-width: 0; position: sticky; top: 100px; display: flex; flex-direction: column; gap: 25px; }
 
 .card {
     background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 24px;
-    padding: clamp(25px, 5vw, 40px); box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+    padding: clamp(25px, 5vw, 40px); box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
     border: 1px solid var(--glass-border); width: 100%; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
 }
-.card:hover { box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2); }
+.card:hover { box-shadow: 0 25px 50px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.2); }
 h2 { margin-bottom: 20px; font-size: clamp(1.4rem, 4vw, 1.8rem); font-weight: 700; background: linear-gradient(135deg, #fff, var(--secondary-glow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: capitalize; }
 .subtitle { color: var(--text-muted); font-size: clamp(0.85rem, 2vw, 0.95rem); margin-top: -15px; margin-bottom: 30px; font-weight: 300; }
-
-/* ESTILOS DE DESCRIPCIÓN NYC PREPARADORES */
-.info-box {
-    background: rgba(0, 136, 255, 0.1);
-    border-left: 4px solid var(--primary-glow);
-    padding: 15px 20px;
-    border-radius: 0 10px 10px 0;
-    margin-bottom: 30px;
-    font-size: 0.95rem;
-    color: var(--text-muted);
-}
-.info-box strong {
-    color: var(--text-main);
-    font-weight: 600;
-}
+.info-box { background: rgba(0, 136, 255, 0.1); border-left: 4px solid var(--primary-glow); padding: 15px 20px; border-radius: 0 10px 10px 0; margin-bottom: 30px; font-size: 0.95rem; color: var(--text-muted); }
+.info-box strong { color: var(--text-main); font-weight: 600; }
 
 /* FORM */
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(15px, 3vw, 25px); }
@@ -105,19 +155,10 @@ input, select {
 input::placeholder { color: rgba(255,255,255,0.3); transition: opacity 0.3s; }
 select option { background-color: #111827; color: #fff; }
 input:focus, select:focus { outline: none; border-color: var(--primary-glow); background-color: rgba(255, 255, 255, 0.15); box-shadow: 0 0 15px rgba(0, 136, 255, 0.3); transform: translateY(-2px); }
-
-/* Campo readonly (Región automática) */
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.7; cursor: pointer; }
 input[readonly] { background-color: rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.05); color: #aaa; cursor: not-allowed; }
 input[readonly]:focus { box-shadow: none; border-color: rgba(255,255,255,0.05); transform: none; }
-
-/* Notas de campo */
-.field-note {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    margin-top: 5px;
-    display: block;
-    font-style: italic;
-}
+.field-note { font-size: 0.75rem; color: var(--text-muted); margin-top: 5px; display: block; font-style: italic; }
 
 button {
     background: linear-gradient(135deg, var(--primary-glow), #0055ff); color: white; border: none; padding: 16px 24px;
@@ -125,71 +166,104 @@ button {
     margin-top: 10px; letter-spacing: 1px; grid-column: span 2; box-shadow: 0 8px 20px rgba(0, 136, 255, 0.3); text-transform: capitalize;
 }
 button:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0, 136, 255, 0.5); background: linear-gradient(135deg, #0099ff, #0044ff); }
-button:active { transform: translateY(1px); box-shadow: 0 5px 15px rgba(0, 136, 255, 0.4); }
 button:disabled { background: #333; color: #aaa; cursor: not-allowed; transform: none; box-shadow: none; }
 
 .spinner { width: 40px; height: 40px; border: 4px solid rgba(255, 255, 255, 0.1); border-left-color: var(--secondary-glow); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
 .loading-text { font-size: 0.9rem; color: var(--text-main); font-weight: 500; animation: pulse 1.5s infinite; }
 
-/* DOCUMENT PREVIEW & EFECTOS DE SEGURIDAD */
+/* DOCUMENT PREVIEW */
 .preview-box {
-    background: rgba(0,0,0,0.25); border-radius: 16px; height: clamp(400px, 50vw, 600px); display: flex; align-items: center; justify-content: center;
-    color: var(--text-muted); text-align: center; position: relative; overflow: hidden; border: 1px dashed rgba(255,255,255,0.2); width: 100%; flex-direction: column; transition: all 0.4s ease;
+    background: rgba(0,0,0,0.5); border-radius: 16px; aspect-ratio: 1 / 1.35; width: 100%; height: auto; 
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted); text-align: center; position: relative; overflow: hidden; border: 1px dashed rgba(255,255,255,0.2); flex-direction: column; transition: all 0.4s ease;
 }
-.preview-box.ready { border-color: rgba(0,230,118,0.5); border-style: solid; background: rgba(0,0,0,0.6); }
+.preview-box:not(.ready) { min-height: 400px; }
+.preview-box.ready { border-color: rgba(0,230,118,0.5); border-style: solid; background: rgba(0,0,0,0.8); }
 
-/* CAPA ANTI CLIC - SEGURIDAD MÁXIMA */
 .anti-download-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; background: transparent; cursor: default; }
-
-/* MARCA DE AGUA IMPOSIBLE DE IGNORAR (ANTI-SCREENSHOT) - COLOR OSCURO Y MIX-BLEND-MODE */
-.watermark-overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='250' height='250'><text x='50%' y='50%' font-size='26' fill='rgba(0,0,0,0.18)' font-family='Arial' font-weight='900' text-anchor='middle' dominant-baseline='middle' transform='rotate(-45 125 125)'>VISTA PREVIA</text></svg>");
-    background-repeat: repeat;
-    mix-blend-mode: multiply;
-}
-
 .pdf-frame { width: 100%; height: 100%; border: none; opacity: 0; animation: fadeUp 0.8s ease forwards 0.2s; z-index: 1; position: relative; pointer-events: none; }
 
-/* Efecto difuminado (Blur) inferior */
-.blur-overlay {
-    position: absolute;
-    bottom: 0; left: 0; width: 100%; height: 35%; 
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    mask-image: linear-gradient(to top, rgba(0,0,0,1) 5%, rgba(0,0,0,0) 100%);
-    -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 5%, rgba(0,0,0,0) 100%);
-    pointer-events: none; 
-    z-index: 25;
-}
+/* 🔥 WATERMARK SOBRE EL DOCUMENTO 🔥 */
+.watermark { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99; }
+/* 🔥 EFECTO DIFUMINADO 40% 🔥 */
+.blur-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 40%; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); mask-image: linear-gradient(to top, rgba(0,0,0,1) 5%, rgba(0,0,0,0) 100%); -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 5%, rgba(0,0,0,0) 100%); pointer-events: none; z-index: 25; }
 
-/* WHATSAPP */
-.whatsapp-float { position: fixed; bottom: 30px; right: 30px; background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 8px 20px 8px 8px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-main); z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
-.whatsapp-float:hover { transform: translateY(-5px) scale(1.02); border-color: #25D366; box-shadow: 0 15px 40px rgba(37, 211, 102, 0.3); background: rgba(15, 20, 30, 0.7); }
-.wa-logo { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-.wa-text { display: flex; flex-direction: column; justify-content: center; }
-.wa-text span { font-size: 1rem; font-weight: 700; letter-spacing: 0.5px; }
+/* 🔥 SECCIÓN DE PAGO 🔥 */
+.footer-sec { background: #000000; border-top: 1px solid var(--glass-border); padding: 60px 20px; text-align: center; position: relative; z-index: 10; }
+.footer-logo { height: 60px; margin-bottom: 20px; filter: drop-shadow(0 0 10px rgba(0,136,255,0.3)); }
+.footer-sec h2 { margin-bottom: 10px; font-size: 2.2rem; }
+.footer-sec p { color: var(--text-muted); margin-bottom: 30px; }
+.footer-btns { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+.btn-pay { display: inline-block; background: linear-gradient(135deg, #00e676, #00c853); color: #000; padding: 16px 40px; border-radius: 50px; font-weight: 700; font-size: 1.1rem; text-decoration: none; box-shadow: 0 10px 25px rgba(0, 230, 118, 0.3); transition: all 0.3s; }
+.btn-pay:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(0, 230, 118, 0.5); }
+.btn-other { display: inline-block; background: transparent; border: 2px solid var(--primary-glow); color: var(--text-main); padding: 14px 40px; border-radius: 50px; font-weight: 600; font-size: 1.1rem; text-decoration: none; transition: all 0.3s; }
+.btn-other:hover { background: var(--primary-glow); color: #fff; box-shadow: 0 10px 25px rgba(0, 136, 255, 0.3); }
+
+/* ─── SECCIÓN TESTIMONIOS ─── */
+.testimonials-sec { max-width: 1440px; margin: 60px auto 60px auto; padding: 0 20px; z-index: 5; position: relative; }
+.testimonials-sec h2 { text-align: center; font-size: 2rem; margin-bottom: 40px; }
+.test-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+.test-card { background: var(--glass-bg); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; text-align: center; }
+.test-card p { font-style: italic; color: #d1d1d1; margin-bottom: 15px; font-size: 0.95rem; }
+.test-card h4 { color: var(--primary-glow); font-size: 1.1rem; }
+.stars { color: #ffb400; margin-bottom: 10px; font-size: 1.2rem; }
+
+/* WHATSAPP FLOAT */
+.whatsapp-float { position: fixed; bottom: 30px; right: 30px; background: var(--glass-bg); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 8px 20px 8px 8px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-main); z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.8); transition: all 0.3s; }
+.whatsapp-float:hover { transform: translateY(-5px) scale(1.02); border-color: #25D366; background: rgba(15, 20, 30, 0.9); }
+.wa-logo { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
+.wa-text span { font-size: 1rem; font-weight: 700; }
 .wa-text small { font-size: 0.75rem; color: #25D366; font-weight: 500; }
 
-/* MOBILE EDGE TO EDGE */
+/* MOBILE */
 @media (max-width: 992px) {
+    .nav-links { display: none; } 
+    .navbar { padding: 15px 20px; }
+    .brand-name { font-size: 1rem; letter-spacing: 1px; } 
     .banner-web { display: none; } 
-    .banner-mobile { display: block; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .banner-mobile { display: block; left: 0; width: 100%; height: 100%; object-fit: contain; object-position: center; z-index: 2; animation: fadeUp 1s cubic-bezier(0.25, 1, 0.5, 1) forwards, mobileFloat 6s ease-in-out infinite 1s; }
     .hero-section { padding: 0; } 
     .container { flex-direction: column; gap: 0; padding: 0 !important; margin: 0 !important; width: 100%; max-width: 100%; }
     .form-panel, .preview-panel { width: 100%; } .preview-panel { position: relative; top: 0; }
     .card { border-radius: 0 !important; border-left: none !important; border-right: none !important; padding: 30px 15px !important; margin: 0 0 15px 0 !important; width: 100%; }
     .form-grid { grid-template-columns: 1fr; gap: 15px; } .full { grid-column: span 1; } button { grid-column: span 1; }
     .whatsapp-float { bottom: 20px; right: 15px; padding: 6px 15px 6px 6px; } .wa-logo { width: 40px; height: 40px; } .wa-text span { font-size: 0.9rem; }
+    .footer-btns { flex-direction: column; gap: 15px; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="hero-section">
-    <img src="https://49659256.fs1.hubspotusercontent-na1.net/hubfs/49659256/PDFS/LOGOS%20AFP/HEADER%20NYC%201-1.png" alt="NYC Preparadores Web" class="hero-image banner-web">
-    <img src="https://49659256.fs1.hubspotusercontent-na1.net/hubfs/49659256/PDFS/LOGOS%20AFP/HEADER%20NYC%201-2.png" alt="NYC Preparadores Mobile" class="hero-image banner-mobile">
+<div class="galaxy-bg"></div>
+
+<header class="navbar">
+    <div class="brand-container">
+        <img src="https://49659256.fs1.hubspotusercontent-na1.net/hubfs/49659256/PDFS/LOGOS%20AFP/logo%20nyc%20(no%20background).png" alt="NYC Preparadores Logo" class="nav-logo">
+        <span class="brand-name">Preparadores NYC</span>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">
+        <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </div>
+</header>
+
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleMenu()"></div>
+<div class="sidebar" id="sidebar">
+    <div class="close-btn" onclick="toggleMenu()">✕</div>
+    <a href="#inicio" onclick="toggleMenu()">Inicio</a>
+    <a href="#seccion-formulario" onclick="toggleMenu()">Emitir Documento</a>
+    <a href="#testimonios" onclick="toggleMenu()">Testimonios</a>
+    <a href="https://wa.me/56933686427" target="_blank" class="nav-btn" onclick="toggleMenu()">Asistencia</a>
+</div>
+
+<div class="hero-section" id="inicio">
+    <img src="https://49659256.fs1.hubspotusercontent-na1.net/hubfs/49659256/PDFS/LOGOS%20AFP/hero%204%20(hermoso).png" alt="NYC Preparadores Web" class="hero-image banner-web">
+    <img src="https://49659256.fs1.hubspotusercontent-na1.net/hubfs/49659256/PDFS/LOGOS%20AFP/hero%204%20(hermoso).png" alt="NYC Preparadores Mobile" class="hero-image banner-mobile">
+    
     <div class="scroll-arrow" onclick="document.getElementById('seccion-formulario').scrollIntoView({behavior: 'smooth'})">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
     </div>
@@ -255,12 +329,49 @@ button:disabled { background: #333; color: #aaa; cursor: not-allowed; transform:
 </div>
 </div>
 
+<section class="footer-sec">
+    <img src="https://49659256.fs1.hubspotusercontent-na1.net/hubfs/49659256/PDFS/LOGOS%20AFP/logo%20miniatura%20preparadores%20nyc.png" class="footer-logo" alt="NYC Logo Mini">
+    <h2>¿Listo para tramitar tu certificado?</h2>
+    <p>Si ya visualizaste tu documento y la simulación está correcta, procede para liberar la descarga.</p>
+    <div class="footer-btns">
+        <a href="https://wa.me/56933686427" target="_blank" class="btn-pay">Pagar Licencia ($15.000)</a>
+        <a href="#" class="btn-other">Ver Otros Productos</a>
+    </div>
+</section>
+
+<section id="testimonios" class="testimonials-sec">
+    <h2>Lo que dicen nuestros clientes</h2>
+    <div class="test-grid">
+        <div class="test-card">
+            <div class="stars">★★★★★</div>
+            <p>"Excelente servicio. Logré arrendar mi departamento en providencia en tiempo récord. Documentos impecables."</p>
+            <h4>— Camila V.</h4>
+        </div>
+        <div class="test-card">
+            <div class="stars">★★★★★</div>
+            <p>"La velocidad es increíble. En minutos pude previsualizar todo y tras el pago me llegó al correo. Totalmente recomendados."</p>
+            <h4>— Diego S.</h4>
+        </div>
+        <div class="test-card">
+            <div class="stars">★★★★★</div>
+            <p>"Tenía miedo de que la corredora me rechazara, pero pasó sin problemas. DICOM y liquidaciones perfectas."</p>
+            <h4>— Andrea R.</h4>
+        </div>
+    </div>
+</section>
+
 <a href="https://wa.me/56933686427" target="_blank" class="whatsapp-float">
     <img src="https://49659256.fs1.hubspotusercontent-na1.net/hubfs/49659256/PDFS/LOGOS%20AFP/LOGO%20WHATSAPP.png" alt="WhatsApp" class="wa-logo">
     <div class="wa-text"><span>¿Asistencia?</span><small>● Ejecutivo en línea</small></div>
 </a>
 
 <script>
+// ─── CONTROL DEL MENÚ LATERAL ──────────────────────────────────
+function toggleMenu() {
+    document.getElementById('sidebar').classList.toggle('active');
+    document.getElementById('sidebar-overlay').classList.toggle('active');
+}
+
 // ─── FORMATEADOR DE RUT CHILENO (SIN PUNTOS, CON GUION) ──────────────────────
 document.getElementById('rut').addEventListener('input', function(e) {
     let valor = e.target.value.replace(/[^0-9kK]/g, '').toUpperCase();
@@ -291,7 +402,6 @@ const regionesChile = {
     "REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA": ["PUNTA ARENAS", "LAGUNA BLANCA", "RÍO VERDE", "SAN GREGORIO", "CABO DE HORNOS", "ANTÁRTICA", "PORVENIR", "PRIMAVERA", "TIMAUKEL", "NATALES", "TORRES DEL PAINE"]
 };
 
-// Crear diccionario inverso { "LA SERENA": "REGIÓN DE COQUIMBO", ... }
 const mapaComunas = {};
 for (const region in regionesChile) {
     regionesChile[region].forEach(comuna => {
@@ -299,17 +409,15 @@ for (const region in regionesChile) {
     });
 }
 
-// Escuchar cambios en Comuna para actualizar la Región
 document.getElementById('comuna').addEventListener('input', function(e) {
     const val = e.target.value.toUpperCase();
     if (mapaComunas[val]) {
         document.getElementById('region').value = mapaComunas[val];
     } else {
-        document.getElementById('region').value = ""; // Limpiar si borran o escriben mal
+        document.getElementById('region').value = "";
     }
 });
 
-// Validación extra al perder el foco (obliga a usar una comuna de la lista)
 document.getElementById('comuna').addEventListener('blur', function(e) {
     const val = e.target.value.toUpperCase();
     if (val !== "" && !mapaComunas[val]) {
@@ -317,7 +425,7 @@ document.getElementById('comuna').addEventListener('blur', function(e) {
         e.target.value = "";
         document.getElementById('region').value = "";
     } else if(mapaComunas[val]) {
-        e.target.value = val; // Asegura que quede en mayúsculas
+        e.target.value = val;
     }
 });
 
@@ -337,7 +445,6 @@ document.getElementById("form").addEventListener("submit", async function(e) {
         document.getElementById("licencia_box").scrollIntoView({behavior: "smooth", block: "center"});
     }
 
-    // Calcular la fecha exacta en español
     const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
     const hoy = new Date();
     const fechaEmisionStr = `${hoy.getDate()} de ${meses[hoy.getMonth()]} de ${hoy.getFullYear()}`;
@@ -375,13 +482,17 @@ document.getElementById("form").addEventListener("submit", async function(e) {
 
         const data = await res.json();
 
-        // 🔥 FUNCIÓN DE SEGURIDAD EXTREMA: CAPA INVISIBLE, MARCA DE AGUA (DESPUÉS DEL IFRAME) Y SIN TOOLBAR 🔥
-        const applyPreview = (url) => {
-            const safeUrl = url + "#toolbar=0&navpanes=0&scrollbar=0";
+        // 🔥 FUNCION DE VISTA PREVIA COMPLETA CON PATRÓN DE MARCA DE AGUA 🔥
+        const applyPreview = (url, watermarkText = "PENDIENTE DE PAGO") => {
+            const safeUrl = url + "#toolbar=0&navpanes=0&scrollbar=0&view=Fit";
+            
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><text x="50%" y="50%" transform="rotate(-45 200 200)" fill="rgba(255,255,255,0.25)" font-size="34" font-family="sans-serif" font-weight="bold" text-anchor="middle">${watermarkText}</text></svg>`;
+            const encodedSvg = encodeURIComponent(svg).replace(/'/g, "%27").replace(/"/g, "%22");
+            
             return `
-                <div class="anti-download-layer"></div>
                 <iframe class="pdf-frame" src="${safeUrl}" frameborder="0"></iframe>
-                <div class="watermark-overlay"></div>
+                <div class="anti-download-layer"></div>
+                <div class="watermark" style="background-image: url('data:image/svg+xml;utf8,${encodedSvg}'); background-repeat: repeat; z-index: 99;"></div>
                 <div class="blur-overlay"></div>
             `;
         };
